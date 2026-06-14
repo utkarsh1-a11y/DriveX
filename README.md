@@ -1,24 +1,19 @@
 <div align="center">
-  <br />
-    <a href="https://github.com/utkarsh1-a11y/DriveX" target="_blank">
-      <img src="public/readme/hero.png" alt="DriveX Banner">
-    </a>
-  <br />
 
-  <div>
-    <img src="https://img.shields.io/badge/-Next_JS-black?style=for-the-badge&logoColor=white&logo=nextdotjs&color=000000" alt="nextdotjs" />
-    <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" alt="typescript" />
-    <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
-    <img src="https://img.shields.io/badge/-Appwrite-black?style=for-the-badge&logoColor=white&logo=appwrite&color=FD366E" alt="appwrite" />
-    <img src="https://img.shields.io/badge/-Groq-black?style=for-the-badge&logoColor=white&logo=groq&color=F55036" alt="groq" />
-    <img src="https://img.shields.io/badge/-Gemini-black?style=for-the-badge&logoColor=white&logo=googlegemini&color=8E75B2" alt="gemini" />
-  </div>
+# 📦 DriveX
 
-  <h3 align="center">DriveX — AI-Powered Cloud File Storage Platform</h3>
+### AI-Powered Cloud File Storage Platform
 
-  <div align="center">
-    A full-stack cloud storage and file-sharing platform with AI-driven document summarization and automatic smart tagging, built using Next.js 15, Appwrite, Groq (LLaMA 3.3 70B), and Google Gemini 2.0 Flash.
-  </div>
+<p>
+  <img src="https://img.shields.io/badge/-Next_JS-black?style=for-the-badge&logoColor=white&logo=nextdotjs&color=000000" alt="nextdotjs" />
+  <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" alt="typescript" />
+  <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
+  <img src="https://img.shields.io/badge/-Appwrite-black?style=for-the-badge&logoColor=white&logo=appwrite&color=FD366E" alt="appwrite" />
+  <img src="https://img.shields.io/badge/-Groq-black?style=for-the-badge&logoColor=white&logo=groq&color=F55036" alt="groq" />
+</p>
+
+A full-stack cloud storage and file-sharing platform with AI-driven document summarization and automatic smart tagging, built using Next.js 15, Appwrite, and Groq (LLaMA 3.3 70B).
+
 </div>
 
 ---
@@ -45,7 +40,7 @@
 
 What sets DriveX apart from a typical file-storage app is its built-in **AI intelligence layer**: every uploaded file can be instantly summarized and auto-tagged using LLMs, turning a static file drive into a searchable, self-organizing knowledge base.
 
-The application is built on **Next.js 15 (App Router)** with **Appwrite** handling authentication, database, and object storage, while **Groq's LLaMA 3.3 70B** and **Google Gemini 2.0 Flash** power the AI summarization and tagging features. Server-side caching (via `unstable_cache`) and carefully designed loading states keep navigation fast and the UI responsive.
+The application is built on **Next.js 15 (App Router)** with **Appwrite** handling authentication, database, and object storage, while **Groq's LLaMA 3.3 70B** powers the AI summarization and tagging features. Server-side caching (via `unstable_cache`) and carefully designed loading states keep navigation fast and the UI responsive.
 
 This project was built to deepen hands-on experience with the **Next.js App Router**, **Backend-as-a-Service architectures (Appwrite)**, **multi-model AI integration**, and **production-grade UI/UX patterns** such as caching, optimistic loading states, and floating contextual UI.
 
@@ -53,15 +48,14 @@ This project was built to deepen hands-on experience with the **Next.js App Rout
 
 ## <a name="tech-stack">⚙️ Tech Stack</a>
 
-| Layer                     | Technology                             | Purpose                                            |
-| ------------------------- | -------------------------------------- | -------------------------------------------------- |
-| Framework                 | **Next.js 15** (App Router)            | Server-side rendering, routing, server actions     |
-| Language                  | **TypeScript**                         | Type safety across the codebase                    |
-| Backend & Auth            | **Appwrite**                           | Authentication (OTP), database, file storage       |
-| AI — Text & Tagging       | **Groq API (LLaMA 3.3 70B Versatile)** | Fast inference for summaries and smart tags        |
-| AI — PDF & Image Analysis | **Google Gemini 2.0 Flash**            | Visual and document content understanding          |
-| Styling                   | **Tailwind CSS + ShadCN UI**           | Utility-first styling and accessible UI primitives |
-| Deployment                | **Vercel**                             | CI/CD and hosting                                  |
+| Layer                        | Technology                             | Purpose                                            |
+| ---------------------------- | -------------------------------------- | -------------------------------------------------- |
+| Framework                    | **Next.js 15** (App Router)            | Server-side rendering, routing, server actions     |
+| Language                     | **TypeScript**                         | Type safety across the codebase                    |
+| Backend & Auth               | **Appwrite**                           | Authentication (OTP), database, file storage       |
+| AI — Summarization & Tagging | **Groq API (LLaMA 3.3 70B Versatile)** | Fast inference for summaries and smart tags        |
+| Styling                      | **Tailwind CSS + ShadCN UI**           | Utility-first styling and accessible UI primitives |
+| Deployment                   | **Vercel**                             | CI/CD and hosting                                  |
 
 ---
 
@@ -83,7 +77,7 @@ This project was built to deepen hands-on experience with the **Next.js App Rout
 
 ### AI-Powered Intelligence
 
-- **AI File Summarizer** — One click generates a concise 2-3 sentence summary and key insights for any file. PDFs and images are read and understood directly by Gemini for accurate, content-aware summaries
+- **AI File Summarizer** — One click generates a concise 2-3 sentence summary and key insights for any file using LLaMA 3.3, helping users quickly understand file contents without opening them
 - **Smart Auto-Tagging** — Automatically generates 6-8 relevant, searchable tags per file using LLaMA 3.3, dramatically reducing manual organization effort
 - **Floating AI Insights Panel** — AI results render in a non-intrusive, dark-themed floating card in the bottom-right corner that persists until dismissed, so users never lose their place in the UI
 
@@ -99,27 +93,26 @@ This project was built to deepen hands-on experience with the **Next.js App Rout
 
 1. A user clicks **"AI Summary"** or **"Smart Tags"** on a file from the dashboard or category view.
 2. A server action in `lib/actions/ai.actions.ts` is triggered.
-3. **File type routing:**
-   - **PDFs and images** are sent to **Gemini 2.0 Flash**, which reads the actual visual/document content and returns a contextual summary.
-   - **Text-based files** are processed via **Groq's LLaMA 3.3 70B**, chosen for its low-latency inference.
-4. The model response is parsed and returned to the client.
+3. The relevant file metadata and extracted content are sent to **Groq's LLaMA 3.3 70B Versatile** model, chosen for its low-latency inference and strong performance on summarization tasks.
+4. The model returns either a 2-3 sentence summary with key insights, or a list of 6-8 relevant tags, depending on the action requested.
 5. The result is rendered in the **floating AI Insights panel**, allowing the user to keep browsing without losing context.
 
-This dual-model approach balances **speed** (Groq for fast text tasks) with **multimodal accuracy** (Gemini for documents/images that require actual visual understanding).
+This keeps the AI layer fast and lightweight — summaries and tags typically return in well under a second thanks to Groq's inference speed.
 
 ---
 
 ## <a name="project-folder-structure">📁 Project Folder Structure</a>
 
 ```
-DriveX/
+storage_management_solution/
 │
 ├── app/                          # Next.js App Router
 │   ├── (auth)/                   # Auth route group
 │   │   ├── sign-in/
 │   │   │   └── page.tsx          # Sign in page
-│   │   └── sign-up/
-│   │       └── page.tsx          # Sign up page
+│   │   ├── sign-up/
+│   │   │   └── page.tsx          # Sign up page
+│   │   └── layout.tsx            # Layout for auth pages
 │   │
 │   ├── (root)/                   # Main app route group
 │   │   ├── [type]/               # Dynamic category pages
@@ -154,7 +147,7 @@ DriveX/
 │
 ├── lib/                          # Core logic and server actions
 │   ├── actions/
-│   │   ├── ai.actions.ts         # AI summarize & smart tag (Groq + Gemini)
+│   │   ├── ai.actions.ts         # AI summarize & smart tag (Groq)
 │   │   ├── file.actions.ts       # File CRUD + caching (Appwrite)
 │   │   └── user.actions.ts       # User auth actions (Appwrite)
 │   ├── appwrite/
@@ -240,14 +233,12 @@ NEXT_PUBLIC_APPWRITE_FILES_COLLECTION=""
 NEXT_PUBLIC_APPWRITE_BUCKET=""
 NEXT_APPWRITE_KEY=""
 GROQ_API_KEY=""
-GEMINI_API_KEY=""
 ```
 
 Obtain credentials from:
 
 - **Appwrite** → [appwrite.io](https://appwrite.io) — create a project and copy your project, database, collection, and bucket IDs
 - **Groq** → [console.groq.com](https://console.groq.com) — free API key, no billing required
-- **Gemini** → [aistudio.google.com](https://aistudio.google.com/app/apikey) — free API key
 
 ### 4. Run the Development Server
 
@@ -261,17 +252,16 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 
 ## <a name="environment-variables">🔐 Environment Variables</a>
 
-| Variable                                | Description                                      |
-| --------------------------------------- | ------------------------------------------------ |
-| `NEXT_PUBLIC_APPWRITE_ENDPOINT`         | Appwrite API endpoint URL                        |
-| `NEXT_PUBLIC_APPWRITE_PROJECT`          | Appwrite project ID                              |
-| `NEXT_PUBLIC_APPWRITE_DATABASE`         | Appwrite database ID                             |
-| `NEXT_PUBLIC_APPWRITE_USERS_COLLECTION` | Appwrite users collection ID                     |
-| `NEXT_PUBLIC_APPWRITE_FILES_COLLECTION` | Appwrite files collection ID                     |
-| `NEXT_PUBLIC_APPWRITE_BUCKET`           | Appwrite storage bucket ID                       |
-| `NEXT_APPWRITE_KEY`                     | Appwrite server-side API key                     |
-| `GROQ_API_KEY`                          | Groq API key for AI summarization and tagging    |
-| `GEMINI_API_KEY`                        | Google Gemini API key for PDF and image analysis |
+| Variable                                | Description                                   |
+| --------------------------------------- | --------------------------------------------- |
+| `NEXT_PUBLIC_APPWRITE_ENDPOINT`         | Appwrite API endpoint URL                     |
+| `NEXT_PUBLIC_APPWRITE_PROJECT`          | Appwrite project ID                           |
+| `NEXT_PUBLIC_APPWRITE_DATABASE`         | Appwrite database ID                          |
+| `NEXT_PUBLIC_APPWRITE_USERS_COLLECTION` | Appwrite users collection ID                  |
+| `NEXT_PUBLIC_APPWRITE_FILES_COLLECTION` | Appwrite files collection ID                  |
+| `NEXT_PUBLIC_APPWRITE_BUCKET`           | Appwrite storage bucket ID                    |
+| `NEXT_APPWRITE_KEY`                     | Appwrite server-side API key                  |
+| `GROQ_API_KEY`                          | Groq API key for AI summarization and tagging |
 
 ---
 
@@ -281,6 +271,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 - Support folder-based organization, not just flat categories
 - Add real-time collaboration indicators for shared files
 - Introduce role-based access control for shared files (view-only vs. edit)
+- Add multimodal AI support for reading content directly from PDFs and images (not just metadata)
 - Add a vector-search layer for semantic file search using AI-generated embeddings
 
 ---
