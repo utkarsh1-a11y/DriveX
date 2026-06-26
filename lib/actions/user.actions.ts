@@ -94,8 +94,6 @@ export const verifySecret = async ({
   }
 };
 
-// Wrapped with React cache — deduplicated per request so multiple
-// server components calling getCurrentUser() only hit Appwrite once.
 export const getCurrentUser = cache(async () => {
   try {
     const { databases, account } = await createSessionClient();
@@ -133,10 +131,19 @@ export const signInUser = async ({ email }: { email: string }) => {
   try {
     const existingUser = await getUserByEmail(email);
 
-    // User exists, send OTP
     if (existingUser) {
-      await sendEmailOTP({ email });
-      return parseStringify({ accountId: existingUser.accountId });
+      const accountId = await sendEmailOTP({ email });
+      if (!accountId) throw new Error("Failed to send OTP");
+
+      const { databases } = await createAdminClient();
+      await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.usersCollectionId,
+        existingUser.$id,
+        { accountId },
+      );
+
+      return parseStringify({ accountId });
     }
 
     return parseStringify({ accountId: null, error: "User not found" });

@@ -32,19 +32,6 @@ import { usePathname } from "next/navigation";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
 import AIInsightsModal from "@/components/Aiinsightsmodal";
 
-const AI_ACTIONS = [
-  {
-    value: "summarize",
-    label: "AI Summary",
-    icon: "/assets/icons/info.svg", // reuse existing icon
-  },
-  {
-    value: "tags",
-    label: "Smart Tags",
-    icon: "/assets/icons/file-other.svg", // reuse existing icon
-  },
-];
-
 const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -52,7 +39,9 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [name, setName] = useState(file.name);
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
-  const [aiMode, setAiMode] = useState<"summary" | "tags" | null>(null);
+  const [aiMode, setAiMode] = useState<"summary" | "tags" | "chat" | null>(
+    null,
+  );
 
   const path = usePathname();
 
@@ -165,7 +154,6 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            {/* Existing actions */}
             {actionsDropdownItems.map((actionItem) => (
               <DropdownMenuItem
                 key={actionItem.value}
@@ -209,7 +197,6 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               </DropdownMenuItem>
             ))}
 
-            {/* AI Actions separator */}
             <DropdownMenuSeparator />
 
             {/* AI Summary */}
@@ -243,12 +230,12 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               </div>
             </DropdownMenuItem>
 
-            {/* Smart Tags */}
+            {/* Ask File — AI chat with file context */}
             <DropdownMenuItem
               className="shad-dropdown-item"
               onClick={() => {
                 setIsDropdownOpen(false);
-                setAiMode("tags");
+                setAiMode("chat");
               }}
             >
               <div className="flex items-center gap-2">
@@ -263,11 +250,10 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                    <line x1="7" y1="7" x2="7.01" y2="7" />
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
                 </div>
-                <span>Smart Tags</span>
+                <span>Ask File</span>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -276,12 +262,13 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
         {renderDialogContent()}
       </Dialog>
 
-      {/* AI Insights Modal — renders outside Dialog to avoid z-index conflicts */}
       {aiMode && (
         <AIInsightsModal
           file={file}
           mode={aiMode}
           onClose={() => setAiMode(null)}
+          documentId={file.$id}
+          bucketFileId={file.bucketFileId}
         />
       )}
     </>

@@ -7,6 +7,7 @@ import { ID, Models, Query } from "node-appwrite";
 import { constructFileUrl, getFileType, parseStringify } from "@/lib/utils";
 import { revalidatePath, unstable_cache } from "next/cache";
 import { getCurrentUser } from "@/lib/actions/user.actions";
+import { generateTags } from "@/lib/actions/ai.actions";
 
 const handleError = (error: unknown, message: string) => {
   console.log(error, message);
@@ -42,6 +43,7 @@ export const uploadFile = async ({
       accountId,
       users: [],
       bucketFileId: bucketFile.$id,
+      tags: [],
     };
 
     const newFile = await databases
@@ -55,6 +57,17 @@ export const uploadFile = async ({
         await storage.deleteFile(appwriteConfig.bucketId, bucketFile.$id);
         handleError(error, "Failed to create file document");
       });
+
+    // Auto-generate tags in the background — doesn't block the upload response
+    if (newFile) {
+      generateTags(
+        constructFileUrl(bucketFile.$id),
+        getFileType(bucketFile.name).type,
+        bucketFile.name,
+        newFile.$id,
+        bucketFile.$id,
+      ).catch((err) => console.error("Auto-tag generation failed:", err));
+    }
 
     revalidatePath(path);
     return parseStringify(newFile);
@@ -78,7 +91,17 @@ const createQueries = (
   ];
 
   if (types.length > 0) queries.push(Query.equal("type", types));
-  if (searchText) queries.push(Query.contains("name", searchText));
+
+  // Search across both filename AND ai-generated tags
+  if (searchText) {
+    queries.push(
+      Query.or([
+        Query.contains("name", searchText),
+        Query.contains("tags", searchText),
+      ]),
+    );
+  }
+
   if (limit) queries.push(Query.limit(limit));
 
   if (sort) {

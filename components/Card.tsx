@@ -6,6 +6,8 @@ import FormattedDateTime from "@/components/FormattedDateTime";
 import ActionDropdown from "@/components/ActionDropdown";
 
 const Card = ({ file }: { file: Models.Document }) => {
+  const tags: string[] = file.tags ?? [];
+
   return (
     <Link href={file.url} target="_blank" className="file-card">
       <div className="flex justify-between">
@@ -30,8 +32,28 @@ const Card = ({ file }: { file: Models.Document }) => {
           className="body-2 text-light-100"
         />
         <p className="caption line-clamp-1 text-light-200">By: {file.owner}</p>
+
+        {/* Tag pills — only shown once tags have been generated */}
+        {tags.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {tags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-medium text-brand"
+              >
+                {tag}
+              </span>
+            ))}
+            {tags.length > 4 && (
+              <span className="rounded-full bg-light-300/20 px-2 py-0.5 text-[10px] text-light-200">
+                +{tags.length - 4}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );
 };
+
 export default Card;
