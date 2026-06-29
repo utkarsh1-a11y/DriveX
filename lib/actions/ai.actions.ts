@@ -3,7 +3,10 @@
 import { createAdminClient } from "@/lib/appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { getCurrentUser } from "@/lib/actions/user.actions";
-import { Query } from "node-appwrite";
+
+// pdf-parse v1.1.1 exports a single function as default
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pdfParse = require("pdf-parse");
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
@@ -41,46 +44,98 @@ async function callGroq(
   return data.choices?.[0]?.message?.content || "";
 }
 
+// ─── Extension-based file type helpers ──────────────────────────────────────
+// Appwrite stores file.type as "document", "image", "video" — NOT mime types.
+// We use the file extension to determine how to read the file.
+
+const PDF_EXTENSIONS = ["pdf"];
+
+const TEXT_EXTENSIONS = [
+  "txt",
+  "md",
+  "markdown",
+  "csv",
+  "json",
+  "xml",
+  "html",
+  "htm",
+  "yaml",
+  "yml",
+  "toml",
+  "ini",
+  "log",
+  "ts",
+  "tsx",
+  "js",
+  "jsx",
+  "py",
+  "java",
+  "c",
+  "cpp",
+  "cs",
+  "go",
+  "rb",
+  "php",
+  "sh",
+  "sql",
+];
+
+function getExtension(fileName: string): string {
+  return fileName.split(".").pop()?.toLowerCase() ?? "";
+}
+
+function isPdf(fileName: string): boolean {
+  return PDF_EXTENSIONS.includes(getExtension(fileName));
+}
+
+function isTextReadable(fileName: string): boolean {
+  return TEXT_EXTENSIONS.includes(getExtension(fileName));
+}
+
+function isReadable(fileName: string): boolean {
+  return isPdf(fileName) || isTextReadable(fileName);
+}
+
 // ─── File content extractor ─────────────────────────────────────────────────
 
-/**
- * Fetches real file content from Appwrite Storage and returns it as a string.
- * Supports: plain text, JSON, CSV, Markdown.
- * For other types (images, video, PDF) returns null so we fall back to
- * filename-based analysis — keeping the function safe for all file types.
- */
 async function extractTextContent(
   bucketFileId: string,
-  fileType: string,
+  fileName: string,
 ): Promise<string | null> {
-  const TEXT_TYPES = [
-    "text/plain",
-    "text/csv",
-    "text/markdown",
-    "application/json",
-    "application/xml",
-    "text/xml",
-    "text/html",
-  ];
-
-  const isTextFile = TEXT_TYPES.some((t) => fileType.startsWith(t));
-  if (!isTextFile) return null;
+  if (!isReadable(fileName)) {
+    console.log(`[AI] Skipping unreadable file: ${fileName}`);
+    return null;
+  }
 
   try {
     const { storage } = await createAdminClient();
 
-    // getFileDownload returns the raw file bytes as an ArrayBuffer
     const arrayBuffer = await storage.getFileDownload(
       appwriteConfig.bucketId,
       bucketFileId,
     );
 
-    const text = Buffer.from(arrayBuffer).toString("utf-8");
+    const buffer = Buffer.from(arrayBuffer);
 
-    // Cap at 6000 chars — enough context for Groq without hitting token limits
+    if (isPdf(fileName)) {
+      try {
+        const data = await pdfParse(buffer);
+        const text = data.text?.trim();
+        if (!text) return null;
+        console.log(`[AI] PDF extracted ${text.length} chars from ${fileName}`);
+        return text.slice(0, 6000);
+      } catch (err) {
+        console.error("[AI] PDF parsing failed:", err);
+        return null;
+      }
+    }
+
+    // Plain text, CSV, JSON, code files etc.
+    const text = buffer.toString("utf-8").trim();
+    console.log(`[AI] Text extracted ${text.length} chars from ${fileName}`);
     return text.slice(0, 6000);
   } catch (err) {
-    console.error("Failed to extract file content:", err);
+    console.error("[AI] Failed to extract file content:", err);
     return null;
   }
 }
@@ -97,17 +152,20 @@ export async function summarizeFile(
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("Unauthorized");
 
-    // Try to read actual file content first
     const fileContent = bucketFileId
-      ? await extractTextContent(bucketFileId, fileType)
+      ? await extractTextContent(bucketFileId, fileName)
       : null;
 
-    let systemPrompt: string;
-    let userMessage: string;
+    if (!fileContent) {
+      return {
+        success: false,
+        result:
+          "Could not read this file's content. AI Summary works with PDF, TXT, CSV, JSON, Markdown, and code files. Images, videos, and audio are not supported.",
+        usedRealContent: false,
+      };
+    }
 
-    if (fileContent) {
-      // ── Real content path ──
-      systemPrompt = `You are a concise document summarizer. You will be given the actual content of a file.
+    const systemPrompt = `You are a concise document summarizer. You will be given the actual content of a file.
 Provide:
 1. A 2-3 sentence summary of what this file contains
 2. 3-5 key insights or important points as bullet points
@@ -121,41 +179,16 @@ Format your response exactly like this:
 • [insight 2]
 • [insight 3]
 
-Keep it brief, clear, and professional. Base your analysis on the actual content provided.`;
+Keep it brief, clear, and professional. Base your analysis ONLY on the actual content provided. Do not guess or make assumptions.`;
 
-      userMessage = `Please summarize this file:
+    const userMessage = `Please summarize this file:
 - File name: ${fileName}
-- File type: ${fileType}
 
 File content:
 ${fileContent}`;
-    } else {
-      // ── Fallback: filename-based analysis ──
-      systemPrompt = `You are a concise document summarizer. When given a file name and type, provide:
-1. A 2-3 sentence summary of what this file likely contains based on its name and type
-2. 3-5 key insights or important points as bullet points
-
-Format your response exactly like this:
-**Summary**
-[your summary here]
-
-**Key Insights**
-• [insight 1]
-• [insight 2]
-• [insight 3]
-
-Keep it brief, clear, and professional.`;
-
-      userMessage = `Please summarize this file:
-- File name: ${fileName}
-- File type: ${fileType}
-- File URL: ${fileUrl}
-
-Analyze based on the filename and type to provide relevant insights.`;
-    }
 
     const result = await callGroq(systemPrompt, userMessage);
-    return { success: true, result, usedRealContent: !!fileContent };
+    return { success: true, result, usedRealContent: true };
   } catch (error) {
     console.error("Summarize error:", error);
     return {
@@ -172,16 +205,15 @@ export async function generateTags(
   fileUrl: string,
   fileType: string,
   fileName: string,
-  documentId?: string, // Appwrite DB document $id — pass this to persist tags
-  bucketFileId?: string, // Appwrite Storage file id — used to read real content
+  documentId?: string,
+  bucketFileId?: string,
 ) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("Unauthorized");
 
-    // Try to read actual file content for smarter tagging
     const fileContent = bucketFileId
-      ? await extractTextContent(bucketFileId, fileType)
+      ? await extractTextContent(bucketFileId, fileName)
       : null;
 
     const systemPrompt = `You are a smart file tagging system. Generate 5-8 relevant tags for a file.
@@ -190,13 +222,12 @@ Example output: ["invoice", "finance", "2024", "receipt", "payment"]
 Tags must be lowercase, single words or short phrases, relevant, and useful for search.`;
 
     const userMessage = fileContent
-      ? `Generate tags for this file:
+      ? `Generate tags for this file based on its actual content:
 - File name: ${fileName}
-- File type: ${fileType}
 
 File content (first 2000 chars):
 ${fileContent.slice(0, 2000)}`
-      : `Generate tags for this file:
+      : `Generate tags for this file based on its name only:
 - File name: ${fileName}
 - File type: ${fileType}`;
 
@@ -205,7 +236,6 @@ ${fileContent.slice(0, 2000)}`
     const cleaned = result.replace(/```json|```/g, "").trim();
     const tags: string[] = JSON.parse(cleaned);
 
-    // ── Persist tags to Appwrite if a document ID was provided ──
     if (documentId) {
       try {
         const { databases } = await createAdminClient();
@@ -216,7 +246,6 @@ ${fileContent.slice(0, 2000)}`
           { tags },
         );
       } catch (dbError) {
-        // Don't fail the whole action if DB write fails — tags still returned to UI
         console.error("Failed to persist tags to Appwrite:", dbError);
       }
     }
@@ -229,7 +258,6 @@ ${fileContent.slice(0, 2000)}`
 }
 
 // ─── Ask your file ───────────────────────────────────────────────────────────
-// Phase 4 — ready to wire up to AIInsightsModal when you're ready
 
 export async function askFile(
   question: string,
@@ -242,26 +270,28 @@ export async function askFile(
     if (!currentUser) throw new Error("Unauthorized");
 
     const fileContent = bucketFileId
-      ? await extractTextContent(bucketFileId, fileType)
+      ? await extractTextContent(bucketFileId, fileName)
       : null;
 
-    const systemPrompt = fileContent
-      ? `You are a helpful assistant that answers questions about documents.
-Answer using ONLY the information present in the document content provided.
-If the answer is not in the document, say "I couldn't find that information in this file."
-Be concise — 1-3 sentences unless the question requires more detail.`
-      : `You are a helpful assistant. The user is asking about a file but its content could not be read.
-Answer based on what you can infer from the filename and file type only.
-Be honest that you cannot read the actual content.`;
+    if (!fileContent) {
+      return {
+        success: true,
+        result:
+          "I can't read the content of this file. Ask File works with PDF, TXT, CSV, JSON, Markdown, and code files. Images, videos, and audio files are not supported.",
+      };
+    }
 
-    const userMessage = fileContent
-      ? `Document: ${fileName} (${fileType})
+    const systemPrompt = `You are a helpful assistant that answers questions about documents.
+Answer using ONLY the information present in the document content provided below.
+If the answer is not found in the document, say exactly: "I couldn't find that information in this file."
+Do NOT guess, assume, or use any outside knowledge.
+Be concise — 1-3 sentences unless the question requires more detail.`;
+
+    const userMessage = `Document: ${fileName}
 
 Content:
 ${fileContent}
 
-Question: ${question}`
-      : `File: ${fileName} (${fileType})
 Question: ${question}`;
 
     const result = await callGroq(systemPrompt, userMessage);
