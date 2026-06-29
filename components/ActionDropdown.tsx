@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Models } from "node-appwrite";
 import { actionsDropdownItems } from "@/constants";
@@ -199,7 +200,6 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
 
             <DropdownMenuSeparator />
 
-            {/* AI Summary */}
             <DropdownMenuItem
               className="shad-dropdown-item"
               onClick={() => {
@@ -230,7 +230,6 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               </div>
             </DropdownMenuItem>
 
-            {/* Ask File — AI chat with file context */}
             <DropdownMenuItem
               className="shad-dropdown-item"
               onClick={() => {
@@ -262,15 +261,19 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
         {renderDialogContent()}
       </Dialog>
 
-      {aiMode && (
-        <AIInsightsModal
-          file={file}
-          mode={aiMode}
-          onClose={() => setAiMode(null)}
-          documentId={file.$id}
-          bucketFileId={file.bucketFileId}
-        />
-      )}
+      {/* ✅ Portal renders AI modal directly on document.body — completely outside any Link or card click handler */}
+      {aiMode &&
+        typeof window !== "undefined" &&
+        createPortal(
+          <AIInsightsModal
+            file={file}
+            mode={aiMode}
+            onClose={() => setAiMode(null)}
+            documentId={file.$id}
+            bucketFileId={file.bucketFileId}
+          />,
+          document.body,
+        )}
     </>
   );
 };

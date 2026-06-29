@@ -11,13 +11,11 @@ import { getFiles, getTotalSpaceUsed } from "@/lib/actions/file.actions";
 import { convertFileSize, getUsageSummary } from "@/lib/utils";
 
 const Dashboard = async () => {
-  // Parallel requests
   const [files, totalSpace] = await Promise.all([
     getFiles({ types: [], limit: 10 }),
     getTotalSpaceUsed(),
   ]);
 
-  // Get usage summary
   const usageSummary = getUsageSummary(totalSpace);
 
   return (
@@ -25,7 +23,6 @@ const Dashboard = async () => {
       <section>
         <Chart used={totalSpace.used} />
 
-        {/* Uploaded file type summaries */}
         <ul className="dashboard-summary-list">
           {usageSummary.map((summary) => (
             <Link
@@ -46,7 +43,6 @@ const Dashboard = async () => {
                     {convertFileSize(summary.size) || 0}
                   </h4>
                 </div>
-
                 <h5 className="summary-type-title">{summary.title}</h5>
                 <Separator className="bg-light-400" />
                 <FormattedDateTime
@@ -59,24 +55,18 @@ const Dashboard = async () => {
         </ul>
       </section>
 
-      {/* Recent files uploaded */}
       <section className="dashboard-recent-files">
         <h2 className="h3 xl:h2 text-light-100">Recent files uploaded</h2>
         {files.documents.length > 0 ? (
           <ul className="mt-5 flex flex-col gap-5">
             {files.documents.map((file: Models.Document) => (
-              <Link
-                href={file.url}
-                target="_blank"
-                className="flex items-center gap-3"
-                key={file.$id}
-              >
+              // ✅ was <Link href={file.url} target="_blank"> — removed
+              <div key={file.$id} className="flex items-center gap-3">
                 <Thumbnail
                   type={file.type}
                   extension={file.extension}
                   url={file.url}
                 />
-
                 <div className="recent-file-details">
                   <div className="flex flex-col gap-1">
                     <p className="recent-file-name">{file.name}</p>
@@ -87,7 +77,7 @@ const Dashboard = async () => {
                   </div>
                   <ActionDropdown file={file} />
                 </div>
-              </Link>
+              </div>
             ))}
           </ul>
         ) : (
