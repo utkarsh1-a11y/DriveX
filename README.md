@@ -9,10 +9,11 @@
   <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" alt="typescript" />
   <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
   <img src="https://img.shields.io/badge/-Appwrite-black?style=for-the-badge&logoColor=white&logo=appwrite&color=FD366E" alt="appwrite" />
-  <img src="https://img.shields.io/badge/-Groq-black?style=for-the-badge&logoColor=white&logo=groq&color=F55036" alt="groq" />
+  <img src="https://img.shields.io/badge/-Groq_LLaMA_3.3-black?style=for-the-badge&logoColor=white&logo=groq&color=F55036" alt="groq" />
+  <img src="https://img.shields.io/badge/-Vercel-black?style=for-the-badge&logoColor=white&logo=vercel&color=000000" alt="vercel" />
 </p>
 
-A full-stack cloud storage and file-sharing platform with AI-driven document summarization and automatic smart tagging, built using Next.js 15, Appwrite, and Groq (LLaMA 3.3 70B).
+**DriveX** is a full-stack cloud storage platform with a built-in AI layer — upload any file and get auto-generated tags, an on-demand AI summary, or a chat interface to ask questions directly about the file's content.
 
 </div>
 
@@ -20,209 +21,210 @@ A full-stack cloud storage and file-sharing platform with AI-driven document sum
 
 ## 📋 Table of Contents
 
-1. 🤖 [Overview](#overview)
-2. ⚙️ [Tech Stack](#tech-stack)
-3. 🔋 [Key Features](#key-features)
-4. 🧠 [How the AI Pipeline Works](#how-the-ai-pipeline-works)
-5. 📁 [Project Folder Structure](#project-folder-structure)
-6. 🏗️ [Architecture Highlights](#architecture-highlights)
-7. 🎬 [Demo](#demo)
-8. 🤸 [Getting Started](#getting-started)
-9. 🔐 [Environment Variables](#environment-variables)
-10. 🚀 [Possible Future Improvements](#possible-future-improvements)
-11. 👨‍💻 [Author](#author)
+1. [Overview](#-overview)
+2. [Tech Stack](#️-tech-stack)
+3. [Key Features](#-key-features)
+4. [How the AI Pipeline Works](#-how-the-ai-pipeline-works)
+5. [Architecture Highlights](#️-architecture-highlights)
+6. [Project Structure](#-project-structure)
+7. [Getting Started](#-getting-started)
+8. [Environment Variables](#-environment-variables)
+9. [Future Improvements](#-future-improvements)
+10. [Author](#-author)
 
 ---
 
-## <a name="overview">🤖 Overview</a>
+## 🤖 Overview
 
-**DriveX** is a full-stack, AI-powered cloud storage application that allows users to securely upload, organize, search, and share files of any type — documents, images, videos, and audio.
+**DriveX** is an AI-powered cloud storage application where users can securely upload, organize, search, and share files of any type — documents, images, videos, and audio.
 
-What sets DriveX apart from a typical file-storage app is its built-in **AI intelligence layer**: every uploaded file can be instantly summarized and auto-tagged using LLMs, turning a static file drive into a searchable, self-organizing knowledge base.
+What separates DriveX from a standard file-storage app is its **built-in AI intelligence layer**:
 
-The application is built on **Next.js 15 (App Router)** with **Appwrite** handling authentication, database, and object storage, while **Groq's LLaMA 3.3 70B** powers the AI summarization and tagging features. Server-side caching (via `unstable_cache`) and carefully designed loading states keep navigation fast and the UI responsive.
+- **Auto-tag** — every file is tagged with relevant keywords automatically on upload, no clicks needed
+- **Summarize** — get a concise summary and key insights for any readable file in one click
+- **Ask File** — chat with a file and get answers grounded only in its actual content
 
-This project was built to deepen hands-on experience with the **Next.js App Router**, **Backend-as-a-Service architectures (Appwrite)**, **multi-model AI integration**, and **production-grade UI/UX patterns** such as caching, optimistic loading states, and floating contextual UI.
+The result is a static file drive transformed into a self-organizing, queryable knowledge base.
 
----
-
-## <a name="tech-stack">⚙️ Tech Stack</a>
-
-| Layer                        | Technology                             | Purpose                                            |
-| ---------------------------- | -------------------------------------- | -------------------------------------------------- |
-| Framework                    | **Next.js 15** (App Router)            | Server-side rendering, routing, server actions     |
-| Language                     | **TypeScript**                         | Type safety across the codebase                    |
-| Backend & Auth               | **Appwrite**                           | Authentication (OTP), database, file storage       |
-| AI — Summarization & Tagging | **Groq API (LLaMA 3.3 70B Versatile)** | Fast inference for summaries and smart tags        |
-| Styling                      | **Tailwind CSS + ShadCN UI**           | Utility-first styling and accessible UI primitives |
-| Deployment                   | **Vercel**                             | CI/CD and hosting                                  |
+Built with **Next.js (App Router)** and **Appwrite** (auth, database, storage), with **Groq's LLaMA 3.3 70B** powering all AI features through Server Actions.
 
 ---
 
-## <a name="key-features">🔋 Key Features</a>
+## ⚙️ Tech Stack
 
-### Core Storage & File Management
-
-- **Secure Authentication** — Email-based signup/login with OTP verification via Appwrite Auth
-- **Drag-and-Drop Uploads** — Upload documents, images, videos, and audio with real-time progress feedback
-- **Categorized File Views** — Files automatically organized into Documents, Images, Media, and Others
-- **File Operations** — Rename, delete, download, and share files with other registered users by email
-- **Global Search** — Instantly search across all files and shared content
-- **Sorting & Filtering** — Sort any file list by name, date, or size
-
-### Dashboard & Analytics
-
-- **Storage Dashboard** — Live overview of total storage consumed, recent uploads, and a breakdown of usage by file type
-- **Custom SVG Chart** — A hand-built double-ring chart visualizing storage usage, with no external charting library dependency
-
-### AI-Powered Intelligence
-
-- **AI File Summarizer** — One click generates a concise 2-3 sentence summary and key insights for any file using LLaMA 3.3, helping users quickly understand file contents without opening them
-- **Smart Auto-Tagging** — Automatically generates 6-8 relevant, searchable tags per file using LLaMA 3.3, dramatically reducing manual organization effort
-- **Floating AI Insights Panel** — AI results render in a non-intrusive, dark-themed floating card in the bottom-right corner that persists until dismissed, so users never lose their place in the UI
-
-### Performance & UX
-
-- **Server-Side Caching** — `unstable_cache` is used to cache file/database queries, enabling near-instant page loads after the first visit
-- **Instant Loading States** — Dedicated `loading.tsx` files ensure a spinner appears immediately on every route transition — no blank screens
-- **Responsive, Minimalist UI** — Clean black-and-white design system that adapts cleanly across desktop, tablet, and mobile
+| Layer          | Technology                             | Purpose                                      |
+| -------------- | -------------------------------------- | -------------------------------------------- |
+| Framework      | **Next.js** (App Router)               | SSR, routing, Server Actions                 |
+| Language       | **TypeScript**                         | End-to-end type safety                       |
+| Backend & Auth | **Appwrite**                           | OTP auth, database, file storage             |
+| AI             | **Groq API — LLaMA 3.3 70B Versatile** | Auto-tagging, summarization, file Q&A        |
+| PDF Parsing    | **pdf-parse**                          | Extracts real text from uploaded PDFs        |
+| Styling        | **Tailwind CSS + ShadCN UI**           | Utility-first styles + accessible primitives |
+| Deployment     | **Vercel**                             | CI/CD and hosting                            |
 
 ---
 
-## <a name="how-the-ai-pipeline-works">🧠 How the AI Pipeline Works</a>
+## 🔋 Key Features
 
-1. A user clicks **"AI Summary"** or **"Smart Tags"** on a file from the dashboard or category view.
-2. A server action in `lib/actions/ai.actions.ts` is triggered.
-3. The relevant file metadata and extracted content are sent to **Groq's LLaMA 3.3 70B Versatile** model, chosen for its low-latency inference and strong performance on summarization tasks.
-4. The model returns either a 2-3 sentence summary with key insights, or a list of 6-8 relevant tags, depending on the action requested.
-5. The result is rendered in the **floating AI Insights panel**, allowing the user to keep browsing without losing context.
+### 🗂️ Core Storage & File Management
 
-This keeps the AI layer fast and lightweight — summaries and tags typically return in well under a second thanks to Groq's inference speed.
+- **OTP Authentication** — Passwordless email login via Appwrite Auth
+- **Drag-and-Drop Uploads** — Upload documents, images, videos, and audio with real-time progress
+- **Categorized File Views** — Automatically organized into Documents, Images, Media, and Others
+- **Full File Operations** — Rename, delete, download, and share files with other users by email
+- **Global Search** — Searches across both file names and AI-generated tags
+- **Sorting** — Sort any view by name, date, or size
+
+### 🤖 AI-Powered Intelligence
+
+- **Smart Auto-Tagging** — Runs automatically the moment a file is uploaded — 5–8 relevant, searchable tags generated and saved, no user action required
+- **AI File Summarizer** — One-click 2–3 sentence summary plus key insights, generated from the file's real content
+- **Ask File (Chat)** — Conversational interface to query a file's content directly; answers strictly from what's in the document
+- **Floating AI Panel** — Results render in a non-intrusive dark card — no page disruption
+
+### 📊 Dashboard & Analytics
+
+- **Storage Overview** — Live breakdown of used storage by file type
+- **Custom SVG Chart** — Hand-built ring chart with zero charting-library dependency
+- **Recent Files Feed** — Latest uploads surfaced directly on the dashboard
+
+### ⚡ Performance & UX
+
+- **Route-Level Loading States** — `loading.tsx` on every route — no blank screens during navigation
+- **Path Revalidation** — Views refresh instantly after every mutation via `revalidatePath`
+- **Responsive Design** — Clean black-and-white design system across desktop, tablet, and mobile
 
 ---
 
-## <a name="project-folder-structure">📁 Project Folder Structure</a>
+## 🧠 How the AI Pipeline Works
 
 ```
-storage_management_solution/
+File uploaded
+      │
+      ▼
+generateTags() fires automatically (no click needed)
+      │
+      ▼
+─────────────────────────────────────────────
+User clicks "AI Summary" / "Ask File"
+      │
+      ▼
+Server Action triggered in lib/actions/ai.actions.ts
+      │
+      ▼
+File content extracted — PDFs via pdf-parse, text/code read directly
+      │
+      ▼
+Prompt sent to Groq API → LLaMA 3.3 70B Versatile
+      │
+      ├─ Summary mode → 2–3 sentence summary + key bullet insights
+      ├─ Tag mode      → 5–8 relevant searchable tags (saved to DB)
+      └─ Ask mode       → Conversational Q&A grounded in file content
+      │
+      ▼
+Result rendered in floating AI panel
+User stays on the same page — no navigation disruption
+```
+
+All AI calls run as **Next.js Server Actions**, so API keys never touch the client. Unreadable files (images, video, audio) get a clear fallback message instead of a guessed answer. Groq's inference speed typically returns results in under a second.
+
+---
+
+## 🏗️ Architecture Highlights
+
+- **Server Actions over API Routes** — All mutations (upload, rename, delete, share, AI calls) live in `lib/actions/`, keeping secrets server-side
+- **Route Groups** — `(auth)` and `(root)` cleanly separate authenticated/unauthenticated layouts without polluting the URL
+- **Dynamic Category Routing** — A single `[type]/page.tsx` handles all four category views — zero duplicated page code
+- **Floating AI Panel** — Renders as a self-contained component, fully decoupled from card click handlers
+- **Fire-and-Forget Tagging** — Tag generation runs right after upload without blocking the response
+- **Component-Driven UI** — ShadCN primitives as the base; custom components (`Chart.tsx`, AI panel, `Thumbnail.tsx`) built on top
+
+---
+
+## 📁 Project Structure
+
+```
+DriveX/
 │
-├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Auth route group
-│   │   ├── sign-in/
-│   │   │   └── page.tsx          # Sign in page
-│   │   ├── sign-up/
-│   │   │   └── page.tsx          # Sign up page
-│   │   └── layout.tsx            # Layout for auth pages
+├── app/
+│   ├── (auth)/
+│   │   ├── sign-in/page.tsx
+│   │   ├── sign-up/page.tsx
+│   │   └── layout.tsx
 │   │
-│   ├── (root)/                   # Main app route group
-│   │   ├── [type]/               # Dynamic category pages
+│   ├── (root)/
+│   │   ├── [type]/
 │   │   │   ├── page.tsx          # Documents / Images / Media / Others
-│   │   │   └── loading.tsx       # Loading state for category pages
+│   │   │   └── loading.tsx
 │   │   ├── page.tsx              # Dashboard
-│   │   ├── loading.tsx           # Loading state for dashboard
-│   │   └── layout.tsx            # Root layout with sidebar
+│   │   ├── loading.tsx
+│   │   └── layout.tsx
 │   │
-│   ├── fonts/                    # Custom fonts
-│   ├── favicon.ico
-│   ├── globals.css               # Global styles
-│   └── layout.tsx                # App root layout
+│   ├── fonts/
+│   ├── globals.css
+│   └── layout.tsx                 # Root layout
 │
-├── components/                   # Reusable UI components
-│   ├── ui/                       # ShadCN UI primitives
-│   ├── ActionDropdown.tsx        # File action menu (rename, share, delete, AI)
-│   ├── AIInsightsModal.tsx       # Floating AI summary / tags card
-│   ├── ActionsModalContent.tsx   # File details & share modal content
-│   ├── AuthForm.tsx              # Login / signup form
-│   ├── Card.tsx                  # File card for grid view
-│   ├── Chart.tsx                 # Custom SVG storage chart
-│   ├── FileUploader.tsx          # Drag and drop file uploader
-│   ├── FormattedDateTime.tsx     # Date formatting component
-│   ├── Header.tsx                # Top navigation bar
-│   ├── MobileNavigation.tsx      # Mobile sidebar sheet
-│   ├── OTPModal.tsx              # OTP verification modal
-│   ├── Search.tsx                # Global search component
-│   ├── Sidebar.tsx               # Desktop sidebar navigation
-│   ├── Sort.tsx                  # Sort dropdown
-│   └── Thumbnail.tsx             # File type thumbnail
+├── components/
+│   ├── ui/                        # ShadCN primitives (button, dialog, sheet, toast, etc.)
+│   ├── ActionDropdown.tsx         # File actions menu + AI triggers
+│   ├── ActionsModalContent.tsx    # Rename / details / share modal content
+│   ├── Aiinsightsmodal.tsx        # Floating AI panel (summary / Ask File)
+│   ├── AuthForm.tsx               # Sign-in / sign-up form
+│   ├── Card.tsx                   # File card (grid view)
+│   ├── Chart.tsx                  # Custom SVG storage chart
+│   ├── FileUploader.tsx           # Drag-and-drop uploader
+│   ├── FormattedDateTime.tsx      # Date/time formatting helper
+│   ├── Header.tsx                 # Top navigation bar
+│   ├── MobileNavigation.tsx       # Mobile sidebar sheet
+│   ├── OTPModal.tsx               # OTP verification modal
+│   ├── Search.tsx                 # Global search
+│   ├── Sidebar.tsx                # Desktop sidebar navigation
+│   ├── Sort.tsx                   # Sort dropdown
+│   └── Thumbnail.tsx              # File type thumbnail
 │
-├── lib/                          # Core logic and server actions
+├── lib/
 │   ├── actions/
-│   │   ├── ai.actions.ts         # AI summarize & smart tag (Groq)
-│   │   ├── file.actions.ts       # File CRUD + caching (Appwrite)
-│   │   └── user.actions.ts       # User auth actions (Appwrite)
+│   │   ├── ai.actions.ts         # Groq AI — summarize, tag, ask
+│   │   ├── file.actions.ts       # File CRUD + revalidatePath
+│   │   └── user.actions.ts       # Appwrite OTP auth
 │   ├── appwrite/
-│   │   ├── config.ts             # Appwrite config & env vars
-│   │   └── index.ts              # Appwrite client setup
-│   └── utils.ts                  # Utility functions
+│   │   ├── config.ts
+│   │   └── index.ts
+│   └── utils.ts                  # Shared helper functions
 │
-├── constants/
-│   └── index.ts                  # Nav items, dropdown actions, sort types
-│
-├── hooks/
-│   └── use-toast.ts              # Toast notification hook
-│
-├── public/                       # Static assets
-│   ├── assets/
-│   │   └── icons/                # SVG icons used throughout the app
-│   └── readme/                   # README images
-│
-├── types/                        # Global TypeScript types
-│   └── index.d.ts
-│
-├── .env.local                    # Environment variables (not committed)
-├── .gitignore
-├── next.config.ts                # Next.js configuration
-├── tailwind.config.ts            # Tailwind CSS configuration
-├── tsconfig.json
-└── package.json
+├── constants/index.ts             # Nav items, dropdown actions, sort options
+├── hooks/use-toast.ts
+├── types/index.d.ts
+└── public/assets/icons/
 ```
 
 ---
 
-## <a name="architecture-highlights">🏗️ Architecture Highlights</a>
-
-- **Server Actions over API Routes** — All data mutations (file upload, rename, delete, share, AI calls) are implemented as Next.js Server Actions in `lib/actions/`, keeping sensitive logic and API keys off the client.
-- **Route Groups for Clean Separation** — The `(auth)` and `(root)` route groups cleanly separate authenticated and unauthenticated layouts without affecting the URL structure.
-- **Dynamic Category Routing** — A single `[type]/page.tsx` dynamic route handles Documents, Images, Media, and Others views, avoiding duplicated page code.
-- **Caching Strategy** — `unstable_cache` wraps Appwrite database queries in `file.actions.ts`, reducing redundant network calls on repeat navigation.
-- **Component-Driven UI** — Built on ShadCN UI primitives with custom components (`Chart.tsx`, `AIInsightsModal.tsx`, `Thumbnail.tsx`) layered on top for app-specific needs.
-
----
-
-## <a name="demo">🎬 Demo</a>
-
-🔗 **Live Demo:** _Coming soon_
-
-📹 **Demo Video:** _Coming soon_
-
----
-
-## <a name="getting-started">🤸 Getting Started</a>
+## 🚀 Getting Started
 
 ### Prerequisites
 
-Make sure the following are installed on your machine:
-
+- [Node.js](https://nodejs.org/en) v18+
 - [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/en) (v18+ recommended)
-- [npm](https://www.npmjs.com/)
+- An [Appwrite Cloud](https://appwrite.io) account (free)
+- A [Groq](https://console.groq.com) API key (free, no billing required)
 
-### 1. Clone the Repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/utkarsh1-a11y/DriveX.git
 cd DriveX
 ```
 
-### 2. Install Dependencies
+### 2. Install
 
 ```bash
 npm install
 ```
 
-### 3. Configure Environment Variables
+### 3. Environment Variables
 
-Create a `.env.local` file in the project root and add the following:
+Create `.env.local` in the project root:
 
 ```env
 NEXT_PUBLIC_APPWRITE_ENDPOINT="https://cloud.appwrite.io/v1"
@@ -235,50 +237,51 @@ NEXT_APPWRITE_KEY=""
 GROQ_API_KEY=""
 ```
 
-Obtain credentials from:
-
-- **Appwrite** → [appwrite.io](https://appwrite.io) — create a project and copy your project, database, collection, and bucket IDs
-- **Groq** → [console.groq.com](https://console.groq.com) — free API key, no billing required
-
-### 4. Run the Development Server
+### 4. Run
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the app running.
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## <a name="environment-variables">🔐 Environment Variables</a>
+## 🔐 Environment Variables
 
-| Variable                                | Description                                   |
-| --------------------------------------- | --------------------------------------------- |
-| `NEXT_PUBLIC_APPWRITE_ENDPOINT`         | Appwrite API endpoint URL                     |
-| `NEXT_PUBLIC_APPWRITE_PROJECT`          | Appwrite project ID                           |
-| `NEXT_PUBLIC_APPWRITE_DATABASE`         | Appwrite database ID                          |
-| `NEXT_PUBLIC_APPWRITE_USERS_COLLECTION` | Appwrite users collection ID                  |
-| `NEXT_PUBLIC_APPWRITE_FILES_COLLECTION` | Appwrite files collection ID                  |
-| `NEXT_PUBLIC_APPWRITE_BUCKET`           | Appwrite storage bucket ID                    |
-| `NEXT_APPWRITE_KEY`                     | Appwrite server-side API key                  |
-| `GROQ_API_KEY`                          | Groq API key for AI summarization and tagging |
-
----
-
-## <a name="possible-future-improvements">🚀 Possible Future Improvements</a>
-
-- Add file versioning and version history
-- Support folder-based organization, not just flat categories
-- Add real-time collaboration indicators for shared files
-- Introduce role-based access control for shared files (view-only vs. edit)
-- Add multimodal AI support for reading content directly from PDFs and images (not just metadata)
-- Add a vector-search layer for semantic file search using AI-generated embeddings
+| Variable                                | Description                      |
+| --------------------------------------- | -------------------------------- |
+| `NEXT_PUBLIC_APPWRITE_ENDPOINT`         | Appwrite API endpoint            |
+| `NEXT_PUBLIC_APPWRITE_PROJECT`          | Appwrite project ID              |
+| `NEXT_PUBLIC_APPWRITE_DATABASE`         | Appwrite database ID             |
+| `NEXT_PUBLIC_APPWRITE_USERS_COLLECTION` | Users collection ID              |
+| `NEXT_PUBLIC_APPWRITE_FILES_COLLECTION` | Files collection ID              |
+| `NEXT_PUBLIC_APPWRITE_BUCKET`           | Storage bucket ID                |
+| `NEXT_APPWRITE_KEY`                     | Server-side Appwrite API key     |
+| `GROQ_API_KEY`                          | Groq API key for all AI features |
 
 ---
 
-## <a name="author">👨‍💻 Author</a>
+## 🔭 Future Improvements
+
+- Folder-based organization (not just flat categories)
+- File versioning and version history
+- Vector search for semantic/AI-powered file discovery using embeddings
+- Image preview and viewer — open and view picture files directly in-app, plus OCR support so the AI layer can read text from images too (photo and video content parsing is not supported yet — these files are stored and organized, but the AI layer can't read them)
+- Role-based access control for shared files (view-only vs. edit)
+- Real-time collaboration indicators
+
+---
+
+## 👨‍💻 Author
 
 **Utkarsh Kumar Gupta**
 
 - GitHub: [@utkarsh1-a11y](https://github.com/utkarsh1-a11y)
-- Project Repository: [DriveX](https://github.com/utkarsh1-a11y/DriveX)
+- Repository: [DriveX](https://github.com/utkarsh1-a11y/DriveX)
+
+---
+
+<div align="center">
+  <sub>Built with Next.js · Appwrite · Groq LLaMA 3.3 · Tailwind CSS</sub>
+</div>
