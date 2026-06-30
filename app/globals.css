@@ -458,3 +458,22 @@
     @apply bg-background text-foreground;
   }
 }
+/* Chat markdown rendering */
+.prose-chat p {
+  margin: 0 0 6px 0;
+}
+.prose-chat p:last-child {
+  margin-bottom: 0;
+}
+.prose-chat ul,
+.prose-chat ol {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+.prose-chat li {
+  margin-bottom: 4px;
+}
+.prose-chat strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}

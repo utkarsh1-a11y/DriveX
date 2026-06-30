@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { summarizeFile, generateTags, askFile } from "@/lib/actions/ai.actions";
 import { Models } from "node-appwrite";
+import ReactMarkdown from "react-markdown";
 
 interface AIInsightsModalProps {
   file: Models.Document;
@@ -92,7 +93,6 @@ const AIInsightsModal = ({
   const [usedRealContent, setUsedRealContent] = useState(false);
   const [error, setError] = useState("");
 
-  // Chat state
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -104,7 +104,6 @@ const AIInsightsModal = ({
   useEffect(() => {
     if (mode === "chat") {
       setIsLoading(false);
-      // Welcome message
       setMessages([
         {
           role: "assistant",
@@ -291,7 +290,6 @@ const AIInsightsModal = ({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Top accent */}
       <div
         className="h-[2px] w-full shrink-0"
         style={{
@@ -300,7 +298,6 @@ const AIInsightsModal = ({
         }}
       />
 
-      {/* Header */}
       <div
         className="flex items-center gap-3 px-5 py-4 shrink-0"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
@@ -343,10 +340,8 @@ const AIInsightsModal = ({
         </div>
       </div>
 
-      {/* Content */}
       {mode === "chat" ? (
         <>
-          {/* Chat messages */}
           <div
             className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3"
             style={{
@@ -396,7 +391,13 @@ const AIInsightsModal = ({
                         }
                   }
                 >
-                  {msg.text}
+                  {msg.role === "assistant" ? (
+                    <div className="prose-chat">
+                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    msg.text
+                  )}
                 </div>
               </div>
             ))}
@@ -444,7 +445,6 @@ const AIInsightsModal = ({
             <div ref={chatEndRef} />
           </div>
 
-          {/* Chat input */}
           <div
             className="px-4 py-3 shrink-0"
             style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
@@ -632,7 +632,6 @@ const AIInsightsModal = ({
         </div>
       )}
 
-      {/* Footer — hidden in chat mode (input replaces it) */}
       {mode !== "chat" && (
         <div
           className="px-5 py-3.5 flex items-center justify-between shrink-0"
@@ -659,7 +658,6 @@ const AIInsightsModal = ({
         </div>
       )}
 
-      {/* Chat mode close button */}
       {mode === "chat" && (
         <button
           type="button"

@@ -175,9 +175,9 @@ Format your response exactly like this:
 [your summary here]
 
 **Key Insights**
-• [insight 1]
-• [insight 2]
-• [insight 3]
+- [insight 1]
+- [insight 2]
+- [insight 3]
 
 Keep it brief, clear, and professional. Base your analysis ONLY on the actual content provided. Do not guess or make assumptions.`;
 
@@ -285,8 +285,13 @@ export async function askFile(
 Answer using ONLY the information present in the document content provided below.
 If the answer is not found in the document, say exactly: "I couldn't find that information in this file."
 Do NOT guess, assume, or use any outside knowledge.
-Be concise — 1-3 sentences unless the question requires more detail.`;
 
+Formatting rules:
+- Use markdown bullet points (- ) for any list of facts, fields, or details — not numbered paragraphs.
+- Use **bold** only for the field name/label, not the whole line.
+- One fact per bullet point. Never combine multiple fields into one line.
+- Keep prose answers short — 1-3 sentences, no bullets needed for simple yes/no or single-fact answers.
+- Do not repeat the question back in the answer.`;
     const userMessage = `Document: ${fileName}
 
 Content:

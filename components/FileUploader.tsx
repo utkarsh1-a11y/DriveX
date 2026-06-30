@@ -10,7 +10,7 @@ import Thumbnail from "@/components/Thumbnail";
 import { MAX_FILE_SIZE } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { uploadFile } from "@/lib/actions/file.actions";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Props {
   ownerId: string;
@@ -20,6 +20,7 @@ interface Props {
 
 const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const path = usePathname();
+  const router = useRouter();
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<{ [key: string]: number }>({});
@@ -79,6 +80,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
                   delete updated[file.name];
                   return updated;
                 });
+                router.refresh();
               }
             }, 500);
           },
@@ -87,7 +89,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
 
       await Promise.all(uploadPromises);
     },
-    [ownerId, accountId, path],
+    [ownerId, accountId, path, router],
   );
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -140,7 +142,6 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
                   <div className="preview-item-name flex-1">
                     <p className="line-clamp-1">{file.name}</p>
 
-                    {/* Progress bar */}
                     <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
                       <div
                         className="h-full rounded-full bg-black transition-all duration-300 ease-out"

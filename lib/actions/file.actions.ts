@@ -5,7 +5,7 @@ import { InputFile } from "node-appwrite/file";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { ID, Models, Query } from "node-appwrite";
 import { constructFileUrl, getFileType, parseStringify } from "@/lib/utils";
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import { generateTags } from "@/lib/actions/ai.actions";
 
@@ -32,6 +32,8 @@ export const uploadFile = async ({
     );
 
     const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error("User not found");
+
     const fileDocument = {
       type: getFileType(bucketFile.name).type,
       name: bucketFile.name,
@@ -58,7 +60,6 @@ export const uploadFile = async ({
         handleError(error, "Failed to create file document");
       });
 
-    // Auto-generate tags in the background — doesn't block the upload response
     if (newFile) {
       generateTags(
         constructFileUrl(bucketFile.$id),
@@ -69,7 +70,8 @@ export const uploadFile = async ({
       ).catch((err) => console.error("Auto-tag generation failed:", err));
     }
 
-    revalidatePath(path);
+    revalidatePath(path, "page");
+
     return parseStringify(newFile);
   } catch (error) {
     handleError(error, "Failed to upload file");
@@ -92,7 +94,6 @@ const createQueries = (
 
   if (types.length > 0) queries.push(Query.equal("type", types));
 
-  // Search across both filename AND ai-generated tags
   if (searchText) {
     queries.push(
       Query.or([
@@ -128,25 +129,13 @@ export const getFiles = async ({
 
     const queries = createQueries(currentUser, types, searchText, sort, limit);
 
-    const getCachedFiles = unstable_cache(
-      async () => {
-        const files = await databases.listDocuments(
-          appwriteConfig.databaseId,
-          appwriteConfig.filesCollectionId,
-          queries,
-        );
-        return parseStringify(files);
-      },
-      [
-        `files-${currentUser.$id}-${types.join(",")}-${searchText}-${sort}-${limit}`,
-      ],
-      {
-        revalidate: 30,
-        tags: [`files-${currentUser.$id}`],
-      },
+    const files = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      queries,
     );
 
-    return getCachedFiles();
+    return parseStringify(files);
   } catch (error) {
     handleError(error, "Failed to get files");
   }
@@ -169,7 +158,8 @@ export const renameFile = async ({
       { name: newName },
     );
 
-    revalidatePath(path);
+    revalidatePath(path, "page");
+
     return parseStringify(updatedFile);
   } catch (error) {
     handleError(error, "Failed to rename file");
@@ -191,7 +181,8 @@ export const updateFileUsers = async ({
       { users: emails },
     );
 
-    revalidatePath(path);
+    revalidatePath(path, "page");
+
     return parseStringify(updatedFile);
   } catch (error) {
     handleError(error, "Failed to update file users");
@@ -216,7 +207,8 @@ export const deleteFile = async ({
       await storage.deleteFile(appwriteConfig.bucketId, bucketFileId);
     }
 
-    revalidatePath(path);
+    revalidatePath(path, "page");
+
     return parseStringify({ status: "success" });
   } catch (error) {
     handleError(error, "Failed to delete file");
@@ -229,48 +221,36 @@ export async function getTotalSpaceUsed() {
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("User is not authenticated.");
 
-    const getCachedSpace = unstable_cache(
-      async () => {
-        const files = await databases.listDocuments(
-          appwriteConfig.databaseId,
-          appwriteConfig.filesCollectionId,
-          [Query.equal("ownerId", [currentUser.$id])],
-        );
-
-        const totalSpace = {
-          image: { size: 0, latestDate: "" },
-          document: { size: 0, latestDate: "" },
-          video: { size: 0, latestDate: "" },
-          audio: { size: 0, latestDate: "" },
-          other: { size: 0, latestDate: "" },
-          used: 0,
-          all: 2 * 1024 * 1024 * 1024,
-        };
-
-        files.documents.forEach((file) => {
-          const fileType = file.type as FileType;
-          totalSpace[fileType].size += file.size;
-          totalSpace.used += file.size;
-
-          if (
-            !totalSpace[fileType].latestDate ||
-            new Date(file.$updatedAt) >
-              new Date(totalSpace[fileType].latestDate)
-          ) {
-            totalSpace[fileType].latestDate = file.$updatedAt;
-          }
-        });
-
-        return parseStringify(totalSpace);
-      },
-      [`totalSpace-${currentUser.$id}`],
-      {
-        revalidate: 30,
-        tags: [`files-${currentUser.$id}`],
-      },
+    const files = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      [Query.equal("ownerId", [currentUser.$id])],
     );
 
-    return getCachedSpace();
+    const totalSpace = {
+      image: { size: 0, latestDate: "" },
+      document: { size: 0, latestDate: "" },
+      video: { size: 0, latestDate: "" },
+      audio: { size: 0, latestDate: "" },
+      other: { size: 0, latestDate: "" },
+      used: 0,
+      all: 2 * 1024 * 1024 * 1024,
+    };
+
+    files.documents.forEach((file) => {
+      const fileType = file.type as FileType;
+      totalSpace[fileType].size += file.size;
+      totalSpace.used += file.size;
+
+      if (
+        !totalSpace[fileType].latestDate ||
+        new Date(file.$updatedAt) > new Date(totalSpace[fileType].latestDate)
+      ) {
+        totalSpace[fileType].latestDate = file.$updatedAt;
+      }
+    });
+
+    return parseStringify(totalSpace);
   } catch (error) {
     handleError(error, "Error calculating total space used");
   }
