@@ -15,6 +15,8 @@
 
 **DriveX** is a full-stack cloud storage platform with a built-in AI layer — upload any file and get auto-generated tags, an on-demand AI summary, or a chat interface to ask questions directly about the file's content.
 
+🔗 **[Live Demo](https://drive-x-omega.vercel.app)** &nbsp;·&nbsp; 📹 **[Demo Video](#-demo)**
+
 </div>
 
 ---
@@ -22,15 +24,16 @@
 ## 📋 Table of Contents
 
 1. [Overview](#-overview)
-2. [Tech Stack](#️-tech-stack)
-3. [Key Features](#-key-features)
-4. [How the AI Pipeline Works](#-how-the-ai-pipeline-works)
-5. [Architecture Highlights](#️-architecture-highlights)
-6. [Project Structure](#-project-structure)
-7. [Getting Started](#-getting-started)
-8. [Environment Variables](#-environment-variables)
-9. [Future Improvements](#-future-improvements)
-10. [Author](#-author)
+2. [Demo](#-demo)
+3. [Tech Stack](#️-tech-stack)
+4. [Key Features](#-key-features)
+5. [How the AI Pipeline Works](#-how-the-ai-pipeline-works)
+6. [Architecture Highlights](#️-architecture-highlights)
+7. [Project Structure](#-project-structure)
+8. [Getting Started](#-getting-started)
+9. [Environment Variables](#-environment-variables)
+10. [Future Improvements](#-future-improvements)
+11. [Author](#-author)
 
 ---
 
@@ -47,6 +50,16 @@ What separates DriveX from a standard file-storage app is its **built-in AI inte
 The result is a static file drive transformed into a self-organizing, queryable knowledge base.
 
 Built with **Next.js (App Router)** and **Appwrite** (auth, database, storage), with **Groq's LLaMA 3.3 70B** powering all AI features through Server Actions.
+
+---
+
+## 🎬 Demo
+
+🔗 **Live App:** [drive-x-omega.vercel.app](https://drive-x-omega.vercel.app)
+
+📹 **Demo Video:**
+
+https://github.com/utkarsh1-a11y/DriveX/raw/main/public/demo.mp4
 
 ---
 
