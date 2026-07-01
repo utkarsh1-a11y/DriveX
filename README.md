@@ -59,7 +59,7 @@ Built with **Next.js (App Router)** and **Appwrite** (auth, database, storage), 
 
 📹 **Demo Video:**
 
-https://github.com/utkarsh1-a11y/DriveX/raw/main/public/demo.mp4
+[![DriveX Demo](https://img.youtube.com/vi/JuX-ABgl88Q/0.jpg)](https://youtu.be/JuX-ABgl88Q)
 
 ---
 
