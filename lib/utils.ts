@@ -75,37 +75,42 @@ export const getFileType = (fileName: string) => {
   return { type: "other", extension };
 };
 
+// Fixed timezone so Server Components (which render on a UTC machine on
+// Vercel) and Client Components (which render in the user's browser, e.g.
+// IST) always produce the SAME formatted time for the same ISO timestamp.
+// Previously this used date.getHours()/getMinutes()/getDate()/getMonth(),
+// which read the *local* time of whatever environment executed the code —
+// giving one time on the server-rendered dashboard/cards and a different,
+// correct time in client-rendered modals.
+const DISPLAY_TIME_ZONE = "Asia/Kolkata";
+
 export const formatDateTime = (isoString: string | null | undefined) => {
   if (!isoString) return "—";
 
   const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "—";
 
-  // Get hours and adjust for 12-hour format
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const period = hours >= 12 ? "pm" : "am";
+  // Get hour/minute/day/month as they appear in DISPLAY_TIME_ZONE,
+  // regardless of which timezone the server/browser is actually running in.
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: DISPLAY_TIME_ZONE,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    day: "numeric",
+    month: "short",
+  }).formatToParts(date);
 
-  // Convert hours to 12-hour format
-  hours = hours % 12 || 12;
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? "";
 
-  // Format the time and date parts
-  const time = `${hours}:${minutes.toString().padStart(2, "0")}${period}`;
-  const day = date.getDate();
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const month = monthNames[date.getMonth()];
+  const hour = get("hour");
+  const minute = get("minute");
+  const dayPeriod = get("dayPeriod").toLowerCase(); // "am" | "pm"
+  const day = get("day");
+  const month = get("month");
+
+  const time = `${hour}:${minute}${dayPeriod}`;
 
   return `${time}, ${day} ${month}`;
 };
